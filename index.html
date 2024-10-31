@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конфигуратор Сумки</title>
+    <style>
+        /* Основные стили */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .configurator {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 800px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        .option {
+            margin-bottom: 20px;
+        }
+        .option label {
+            font-weight: bold;
+        }
+        .option button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        .option button:hover {
+            background-color: #ddd;
+        }
+        /* Стили для активной кнопки */
+        .option button.active {
+            background-color: #5d8bd6;
+            color: #fff;
+        }
+        .bag-image {
+            width: 100%;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Конфигуратор Сумки</h1>
+
+<div class="configurator">
+    <div class="options">
+        <!-- Параметры конфигурации ремешка -->
+        <div class="option">
+            <label>Выберите ремешок:</label>
+            <button onclick="selectStrap('short', this)">Маленький ремешок</button>
+            <button onclick="selectStrap('long', this)">Большой ремешок</button>
+            <button onclick="selectStrap('metal', this)">Железный ремешок</button>
+        </div>
+
+        <!-- Параметры конфигурации материала -->
+        <div class="option">
+            <label>Выберите материал:</label>
+            <button onclick="selectMaterial('leather', this)">Кожа</button>
+            <button onclick="selectMaterial('cotton', this)">Хлопок</button>
+            <button onclick="selectMaterial('silk', this)">Шелк</button>
+        </div>
+    </div>
+
+    <!-- Контейнер для отображения изображения сумки -->
+    <div class="image-container">
+        <img id="bagImage" class="bag-image" src="path/to/default-image.jpg" alt="Сумка">
+        <!-- Укажите ссылку на изображение по умолчанию выше -->
+    </div>
+</div>
+
+<script>
+    // Переменные для хранения выбранных параметров
+    let selectedStrap = 'short';  // Значение по умолчанию
+    let selectedMaterial = 'leather';  // Значение по умолчанию
+
+    // Функция для выбора ремешка
+    function selectStrap(strap, element) {
+        selectedStrap = strap;
+        updateActiveButton(element, 'strap');  // Обновляем активную кнопку для ремешка
+        updateImage();
+    }
+
+    // Функция для выбора материала
+    function selectMaterial(material, element) {
+        selectedMaterial = material;
+        updateActiveButton(element, 'material');  // Обновляем активную кнопку для материала
+        updateImage();
+    }
+
+    // Функция для обновления активной кнопки
+    function updateActiveButton(selectedElement, type) {
+        // Находим все кнопки в выбранной категории и удаляем класс 'active'
+        const buttons = document.querySelectorAll(`.option button`);
+        buttons.forEach(button => {
+            if (button.parentElement.querySelector(`button`) === selectedElement.parentElement.querySelector(`button`)) {
+                button.classList.remove('active');
+            }
+        });
+
+        // Добавляем класс 'active' для выбранной кнопки
+        selectedElement.classList.add('active');
+    }
+
+    // Функция для обновления изображения
+    function updateImage() {
+        // Логика для выбора изображения на основе ремешка и материала
+        let imagePath = 'path/to/default-image.jpg';  // Изображение по умолчанию
+
+        if (selectedStrap === 'short' && selectedMaterial === 'leather') {
+            imagePath = 'сумки/кожакорот.jpg';  // Маленький ремешок, кожа
+        } else if (selectedStrap === 'short' && selectedMaterial === 'cotton') {
+            imagePath = 'path/to/image-short-cotton.jpg';  // Маленький ремешок, хлопок
+        } else if (selectedStrap === 'short' && selectedMaterial === 'silk') {
+            imagePath = 'сумки/шолккорот.jpg';  // Маленький ремешок, шелк
+        } else if (selectedStrap === 'long' && selectedMaterial === 'leather') {
+            imagePath = 'сумки/кожадлин.jpg';  // Большой ремешок, кожа
+        } else if (selectedStrap === 'long' && selectedMaterial === 'cotton') {
+            imagePath = 'сумки/.jpg';  // Большой ремешок, хлопок
+        } else if (selectedStrap === 'long' && selectedMaterial === 'silk') {
+            imagePath = 'сумки/шолкдлин.jpg';  // Большой ремешок, шелк
+        } else if (selectedStrap === 'metal' && selectedMaterial === 'leather') {
+            imagePath = 'сумки/кожажелез.jpg';  // Железный ремешок, кожа
+        } else if (selectedStrap === 'metal' && selectedMaterial === 'cotton') {
+            imagePath = 'path/to/image-metal-cotton.jpg';  // Железный ремешок, хлопок
+        } else if (selectedStrap === 'metal' && selectedMaterial === 'silk') {
+            imagePath = 'сумки/шолкжелез.jpg';  // Железный ремешок, шелк
+        }
+
+        // Обновляем изображение
+        document.getElementById('bagImage').src = imagePath;
+    }
+</script>
+
+</body>
+</html>
