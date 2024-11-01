@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конфигуратор Сумки</title>
+    <style>
+        /* Основные стили */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .configurator {
+            display: flex;
+            flex-direction: column; /* Изменяем направление, чтобы изображение было сверху */
+            align-items: center;
+            width: 80%;
+            max-width: 800px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .configurator {
+        padding-top: 100px; /* Отступ, чтобы элементы не накладывались на изображение */
+        }
+ 
+        .bag-image-container {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 20px; 
+        top: 20px; /* Регулируем отступ сверху */
+        z-index: 1;
+        }
+
+        .bag-image {
+            width: 100%;
+            /* Измените размер изображения сумки здесь */
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        .option {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .option label {
+            font-weight: bold;
+        }
+        .option button {
+            margin-top: 10px;
+            padding: 8px 12px; /* Размер кнопок меньше для мобильного */
+            font-size: 16px; /* Размер текста для мобильного */
+            width: 100%; /* Кнопки растягиваются на ширину контейнера */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .option button:hover {
+            background-color: #ddd;
+        }
+        .option button.active {
+            background-color: #ff4be7;
+            color: #fff;
+        }
+        /* Стили для блока стоимости */
+        .price {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        @media (max-width: 600px) {
+            .bag-image-container {
+                max-width: 300px; /* Измените размер изображения для мобильных */
+            }
+
+            .option button {
+                padding: 8px 10px; /* Меньше отступы для кнопок */
+                font-size: 14px; /* Уменьшенный размер текста */
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Конфигуратор Сумки</h1>
+
+<div class="configurator">
+    <!-- Контейнер для изображения сумки -->
+    <div class="bag-image-container">
+        <img id="bagImage" class="bag-image" src="path/to/default-image.jpg" alt="Сумка">
+        <!-- Укажите ссылку на изображение по умолчанию выше -->
+    </div>
+
+    <div class="options">
+        <!-- Параметры конфигурации ремешка -->
+        <div class="option">
+            <label>Выберите ремешок:</label>
+            <button onclick="selectStrap('short', this)">Маленький ремешок</button>
+            <button onclick="selectStrap('long', this)">Большой ремешок</button>
+            <button onclick="selectStrap('metal', this)">Железный ремешок</button>
+        </div>
+
+        <!-- Параметры конфигурации материала -->
+        <div class="option">
+            <label>Выберите материал:</label>
+            <button onclick="selectMaterial('leather', this)">Кожа</button>
+            <button onclick="selectMaterial('cotton', this)">Хлопок</button>
+            <button onclick="selectMaterial('silk', this)">Шелк</button>
+        </div>
+    </div>
+
+    <!-- Блок для отображения стоимости -->
+    <div class="price">
+        Стоимость: <span id="price">0</span> руб.
+    </div>
+</div>
+
+<script>
+    // Переменные для хранения выбранных параметров и стоимости
+    let selectedStrap = 'short';  // Значение по умолчанию
+    let selectedMaterial = 'leather';  // Значение по умолчанию
+    let basePrice = 1000; // Базовая цена сумки
+
+    // Объекты для хранения стоимости разных комбинаций
+    const strapPrices = {
+        short: 0,
+        long: 500,
+        metal: 1000
+    };
+
+    const materialPrices = {
+        leather: 0,
+        cotton: -200,
+        silk: 300
+    };
+
+    // Объект для хранения путей к изображениям сумок
+    const bagImages = {
+        "short-leather": "сумки/кк.jpg",
+        "short-cotton": "сумки/хк.jpg",
+        "short-silk": "сумки/шк.jpg",
+        "long-leather": "сумки/кд.jpg",
+        "long-cotton": "сумки/хд.jpg",
+        "long-silk": "сумки/шд.jpg",
+        "metal-leather": "сумки/кж.jpg",
+        "metal-cotton": "сумки/хж.jpg",
+        "metal-silk": "сумки/шж.jpg"
+    };
+
+    // Функция для выбора ремешка
+    function selectStrap(strap, element) {
+        selectedStrap = strap;
+        updateActiveButton(element, 'strap');
+        updateImage();
+        updatePrice();
+    }
+
+    // Функция для выбора материала
+    function selectMaterial(material, element) {
+        selectedMaterial = material;
+        updateActiveButton(element, 'material');
+        updateImage();
+        updatePrice();
+    }
+
+    // Функция для обновления активной кнопки
+    function updateActiveButton(selectedElement, type) {
+        const buttons = document.querySelectorAll(`.option button`);
+        buttons.forEach(button => {
+            if (button.parentElement.querySelector(`button`) === selectedElement.parentElement.querySelector(`button`)) {
+                button.classList.remove('active');
+            }
+        });
+        selectedElement.classList.add('active');
+    }
+
+    // Функция для обновления изображения
+    function updateImage() {
+        const imageKey = `${selectedStrap}-${selectedMaterial}`; // Ключ для выбора изображения
+
+        // Убедитесь, что изображение существует, иначе используйте изображение по умолчанию
+        const imagePath = bagImages[imageKey] || "path/to/default-image.jpg";
+        document.getElementById('bagImage').src = imagePath;
+    }
+
+    // Функция для обновления стоимости
+    function updatePrice() {
+        const totalPrice = basePrice + strapPrices[selectedStrap] + materialPrices[selectedMaterial];
+        document.getElementById('price').innerText = totalPrice;
+    }
+</script>
+
+
+
+</body>
+</html>
+
+
+
+
